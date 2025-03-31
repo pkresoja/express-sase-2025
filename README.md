@@ -1,2 +1,15 @@
-# express-sase-2025
-Backend application code from course SASE on Singidunum University in 2024/25 academic year
+# sase-backend
+
+To install dependencies:
+
+```bash
+bun install
+```
+
+To run:
+
+```bash
+bun run src/index.ts
+```
+
+This project was created using `bun init` in bun v1.2.5. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
