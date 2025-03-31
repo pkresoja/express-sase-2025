@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { FlightService } from "./flight.service";
+import { FlightService } from "../services/flight.service";
 
 export const FlightRoute = Router()
 
