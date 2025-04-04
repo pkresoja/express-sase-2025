@@ -4,6 +4,7 @@ import { User } from "../entities/User";
 import type { LoginModel } from "../models/login.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import type { Response } from "express";
 
 const repo = AppDataSource.getRepository(User)
 const tokenSecret = process.env.JWT_SECRET
@@ -29,6 +30,39 @@ export class UserService {
         }
 
         throw new Error('BAD_CREDENTIALS')
+    }
+
+    static async verifyToken(req: any, res: Response, next: Function) {
+        const whitelist = ['/api/user/login']
+
+        if (whitelist.includes(req.path)) {
+            next()
+            return
+        }
+
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+
+        if (token == undefined) {
+            res.status(401).json({
+                message: 'NO_TOKEN_FOUND',
+                timestamp: new Date()
+            })
+            return
+        }
+
+        jwt.verify(token, tokenSecret, (err:any, user: any) =>{
+            if (err) {
+                res.status(403).json({
+                    message: 'INVALID_TOKEN',
+                    timestamp: new Date()
+                })
+                return
+            }
+
+            req.user = user
+            next()
+        })
     }
 
     static async getUserByEmail(email: string) {

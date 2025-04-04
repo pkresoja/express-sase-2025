@@ -6,12 +6,14 @@ import { configDotenv } from 'dotenv'
 import { AppDataSource } from './db'
 import { AirlineRoute } from './routes/airline.route'
 import { UserRoute } from './routes/user.route'
+import { UserService } from './services/user.service'
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(morgan('tiny'))
 
+app.use(UserService.verifyToken)
 app.use('/api/flight', FlightRoute)
 app.use('/api/airline', AirlineRoute)
 app.use('/api/user', UserRoute)
