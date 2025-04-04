@@ -1,15 +1,15 @@
-# sase-backend
+# SASE 2025 - Backend Application
 
-To install dependencies:
-
-```bash
-bun install
+`.env` example:
 ```
+SERVER_PORT=5000
+DATABASE_HOST=localhost
+DATABASE_PORT=3308
+DATABASE_USER=root
+DATABASE_PASSWORD=root
+DATABASE_NAME=sde_sase_2025
 
-To run:
-
-```bash
-bun run src/index.ts
+JWT_SECRET=177bf7f7-e446-427a-901f-a033cc5a1396
+JWT_ACCESS_TTL=15s
+JWT_REFRESH_TTL=7d
 ```
-
-This project was created using `bun init` in bun v1.2.5. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
