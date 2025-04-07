@@ -34,7 +34,7 @@ export class UserService {
     }
 
     static async verifyToken(req: any, res: Response, next: Function) {
-        const whitelist = ['/api/user/login', '/api/user/register']
+        const whitelist = ['/api/user/login', '/api/user/refresh', '/api/user/register']
 
         if (whitelist.includes(req.path)) {
             next()
