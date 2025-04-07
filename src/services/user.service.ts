@@ -5,6 +5,7 @@ import type { LoginModel } from "../models/login.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { Response } from "express";
+import type { RegisterModel } from "../models/register.model";
 
 const repo = AppDataSource.getRepository(User)
 const tokenSecret = process.env.JWT_SECRET
@@ -24,8 +25,8 @@ export class UserService {
 
             return {
                 name: user?.email,
-                access: jwt.sign(payload, tokenSecret, { expiresIn: accessTTL }),
-                refresh: jwt.sign(payload, tokenSecret, { expiresIn: refreshTTL })
+                access: jwt.sign(payload, tokenSecret!, { expiresIn: accessTTL }),
+                refresh: jwt.sign(payload, tokenSecret!, { expiresIn: refreshTTL })
             }
         }
 
@@ -33,7 +34,7 @@ export class UserService {
     }
 
     static async verifyToken(req: any, res: Response, next: Function) {
-        const whitelist = ['/api/user/login']
+        const whitelist = ['/api/user/login', '/api/user/register']
 
         if (whitelist.includes(req.path)) {
             next()
@@ -51,7 +52,7 @@ export class UserService {
             return
         }
 
-        jwt.verify(token, tokenSecret, (err:any, user: any) =>{
+        jwt.verify(token, tokenSecret!, (err: any, user: any) => {
             if (err) {
                 res.status(403).json({
                     message: 'INVALID_TOKEN',
@@ -62,6 +63,39 @@ export class UserService {
 
             req.user = user
             next()
+        })
+    }
+
+    static async refreshToken(token: string) {
+        const decoded: any = jwt.verify(token, tokenSecret!)
+        const user = await this.getUserByEmail(decoded.email)
+
+        const payload = {
+            id: user?.userId,
+            email: user?.email
+        }
+
+        return {
+            name: user?.email,
+            access: jwt.sign(payload, tokenSecret, { expiresIn: accessTTL }),
+            refresh: token
+        }
+    }
+
+    static async register(model: RegisterModel) {
+        const data = await repo.existsBy({
+            email: model.email,
+            deletedAt: IsNull()
+        })
+
+        if (data)
+            throw new Error("USER_EXISTS")
+
+        const hashed = await bcrypt.hash(model.password, 12)
+        await repo.save({
+            email: model.email,
+            password: hashed,
+            name: model.name
         })
     }
 
