@@ -32,5 +32,27 @@ export class AirlineService {
             throw new Error('NOT_FOUND')
 
         return data
-    } 
+    }
+
+    static async createAirline(model: Airline) {
+        await repo.save({
+            name: model.name,
+            website: model.website,
+            createdAt: new Date()
+        })
+    }
+    
+    static async updateAirline(id: number, model: Airline) {
+        const data = await this.getAirlineById(id)
+        data.name = model.name
+        data.website = model.website
+        data.updatedAt = new Date()
+        await repo.save(data)
+    }
+
+    static async deleteAirline(id: number) {
+        const data = await this.getAirlineById(id)
+        data.deletedAt = new Date()
+        await repo.save(data)
+    }
 }
