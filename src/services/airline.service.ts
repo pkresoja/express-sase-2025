@@ -1,3 +1,4 @@
+import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { Airline } from "../entities/Airline";
 
@@ -9,11 +10,27 @@ export class AirlineService {
             select: {
                 airlineId: true,
                 name: true,
-                website: true
+                website: true,
+                createdAt: true,
+                updatedAt: true
             },
             where: {
-                active: true
+                deletedAt: IsNull()
             }
         })
     }
+
+    static async getAirlineById(id: number) {
+        const data = await repo.findOne({
+            where: {
+                airlineId: id,
+                deletedAt: IsNull()
+            }
+        })
+
+        if (data == undefined)
+            throw new Error('NOT_FOUND')
+
+        return data
+    } 
 }
