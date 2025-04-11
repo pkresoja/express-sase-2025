@@ -19,14 +19,16 @@ export class Ticket {
   @Column("int", { name: "flight_id", unsigned: true })
   flightId: number;
 
+  flight: null | any
+
   @Column("int", { name: "airline_id", unsigned: true })
   airlineId: number;
 
   @Column("int", { name: "user_id", unsigned: true })
   userId: number;
 
-  @Column("tinyint", { name: "paid", unsigned: true })
-  paid: number;
+  @Column("datetime", { name: "paid_at", nullable: true })
+  paidAt: Date | null;
 
   @Column("datetime", { name: "created_at" })
   createdAt: Date;

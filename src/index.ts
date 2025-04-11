@@ -7,6 +7,7 @@ import { AppDataSource } from './db'
 import { AirlineRoute } from './routes/airline.route'
 import { UserRoute } from './routes/user.route'
 import { UserService } from './services/user.service'
+import { TicketRoute } from './routes/ticket.route'
 
 const app = express()
 app.use(express.json())
@@ -17,6 +18,7 @@ app.use(UserService.verifyToken)
 app.use('/api/flight', FlightRoute)
 app.use('/api/airline', AirlineRoute)
 app.use('/api/user', UserRoute)
+app.use('/api/ticket', TicketRoute)
 
 app.get('*', (req, res) => {
     res.status(404).json({
