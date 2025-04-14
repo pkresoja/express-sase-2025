@@ -15,7 +15,7 @@ TicketRoute.get('/', async (req: any, res) => {
 TicketRoute.get('/:id', async (req: any, res) => {
     try {
         const id = Number(req.params.id)
-        res.json(await TicketService.getTicketById(req.user.id, id))
+        res.json(await TicketService.getTicketById(req.user.id, id, true))
     } catch (e) {
         sendError(res, e)
     }

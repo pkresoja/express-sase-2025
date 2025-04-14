@@ -39,7 +39,7 @@ export class TicketService {
         return data
     }
 
-    static async getTicketById(user: number, id: number) {
+    static async getTicketById(user: number, id: number, includeFlightObject = false) {
         const data = await repo.findOne({
             where: {
                 ticketId: id,
@@ -50,6 +50,11 @@ export class TicketService {
 
         if (data == undefined)
             throw new Error("TICKET_NOT_FOUND")
+
+        if (includeFlightObject) {
+            const rsp = await FlightService.getFlightById(data.flightId)
+            data.flight = rsp.data
+        }
 
         return data
     }
