@@ -6,18 +6,29 @@ import { FlightService } from "./flight.service";
 const repo = AppDataSource.getRepository(Ticket)
 
 export class TicketService {
-    static async getTickets() {
+    static async getTickets(id: number) {
         const data = await repo.find({
+            select: {
+                ticketId: true,
+                flightId: true,
+                airlineId: true,
+                airline: {
+                    airlineId: true,
+                    name: true
+                },
+                paidAt: true,
+                createdAt: true,
+                updatedAt: true
+            },
             where: {
-                userId: 1,
+                userId: id,
                 deletedAt: IsNull()
+            },
+            relations: {
+                airline: true
             }
         })
 
-        // for (let ticket of data) {
-        //     const f = await FlightService.getFlightById(ticket.flightId)
-        //     ticket.flight = f.data
-        // }
         const ids = data.map(t => t.flightId)
         const flights = await FlightService.getFlightsByIds(ids)
 
@@ -26,5 +37,57 @@ export class TicketService {
         }
 
         return data
+    }
+
+    static async getTicketById(user: number, id: number) {
+        const data = await repo.findOne({
+            where: {
+                ticketId: id,
+                userId: user,
+                deletedAt: IsNull()
+            }
+        })
+
+        if (data == undefined)
+            throw new Error("TICKET_NOT_FOUND")
+
+        return data
+    }
+
+    static async createTicket(user: number, model: Ticket) {
+        await repo.save({
+            userId: user,
+            airlineId: model.airlineId,
+            flightId: model.flightId,
+            createdAt: new Date()
+        })
+    }
+
+    static async updateTicket(user: number, id: number, model: Ticket) {
+        const ticket = await this.getTicketById(user, id)
+
+        if (ticket.paidAt != null)
+            throw new Error('TICKET_ALREADY_PAID')
+
+        ticket.flightId = model.flightId
+        ticket.airlineId = model.airlineId
+        ticket.updatedAt = new Date()
+        await repo.save(ticket)
+    }
+
+    static async makeTicketPaid(user: number, id: number) {
+        const ticket = await this.getTicketById(user, id)
+
+        if (ticket.paidAt != null)
+            throw new Error('TICKET_ALREADY_PAID')
+
+        ticket.paidAt = new Date()
+        await repo.save(ticket)
+    }
+
+    static async deleteTicket(user: number, id: number) {
+        const ticket = await this.getTicketById(user, id)
+        ticket.deletedAt = new Date()
+        await repo.save(ticket)
     }
 }
