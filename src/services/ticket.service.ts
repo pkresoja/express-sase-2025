@@ -26,6 +26,10 @@ export class TicketService {
             },
             relations: {
                 airline: true
+            },
+            order: {
+                createdAt: 'desc',
+                paidAt: 'asc'
             }
         })
 
