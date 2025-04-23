@@ -2,6 +2,7 @@ import { IsNull } from "typeorm";
 import { AppDataSource } from "../db";
 import { Ticket } from "../entities/Ticket";
 import { FlightService } from "./flight.service";
+import { AirlineService } from "./airline.service";
 
 const repo = AppDataSource.getRepository(Ticket)
 
@@ -58,6 +59,7 @@ export class TicketService {
         if (includeFlightObject) {
             const rsp = await FlightService.getFlightById(data.flightId)
             data.flight = rsp.data
+            data.airline = await AirlineService.getAirlineById(data.airlineId)
         }
 
         return data
